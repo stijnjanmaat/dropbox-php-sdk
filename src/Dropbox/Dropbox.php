@@ -554,6 +554,9 @@ class Dropbox
      *
      * @param  string $fromPath Path to be copied
      * @param  string $toPath   Path to be copied to
+     * @param  boolean $allowSharedFolder   If true, copy will copy contents in shared folder, otherwise RelocationError.cant_copy_shared_folder will be returned if from_path contains shared folder. This field is always true for move. The default for this field is False.
+     * @param  boolean $autorename   If there's a conflict, have the Dropbox server try to autorename the file to avoid the conflict. The default for this field is False.
+     * @param  boolean $allowOwnershipTransfer   Allow moves by owner even if it would result in an ownership transfer for the content being moved. This does not apply to copies. The default for this field is False.
      *
      * @return \Kunnu\Dropbox\Models\DeletedMetadata|\Kunnu\Dropbox\Models\FileMetadata
      *
@@ -562,7 +565,7 @@ class Dropbox
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-copy
      *
      */
-    public function copy($fromPath, $toPath)
+    public function copy($fromPath, $toPath, $allowSharedFolder = false, $autorename = false, $allowOwnershipTransfer = false)
     {
         //From and To paths cannot be null
         if (is_null($fromPath) || is_null($toPath)) {
@@ -570,7 +573,7 @@ class Dropbox
         }
 
         //Response
-        $response = $this->postToAPI('/files/copy', ['from_path' => $fromPath, 'to_path' => $toPath]);
+        $response = $this->postToAPI('/files/copy', ['from_path' => $fromPath, 'to_path' => $toPath, 'allow_shared_folder' => $allowSharedFolder, 'autorename' => $autorename, 'allow_ownership_transfer' => $allowOwnershipTransfer]);
 
         //Make and Return the Model
         return $this->makeModelFromResponse($response);
